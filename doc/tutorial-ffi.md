@@ -13,7 +13,6 @@ standard output. If you have the OpenSSL libraries installed, it
 should compile and run without any extra effort.
 
 ~~~~ {.xfail-test}
-extern mod std;
 use core::libc::c_uint;
 
 extern mod crypto {
@@ -37,7 +36,7 @@ fn sha1(data: ~str) -> ~str {
 }
 
 fn main() {
-    io::println(sha1(core::os::args()[1]));
+    io::println(sha1(copy os::args()[1]));
 }
 ~~~~
 
