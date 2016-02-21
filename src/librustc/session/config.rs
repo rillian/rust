@@ -69,6 +69,7 @@ pub enum OutputType {
     Object,
     Exe,
     DepInfo,
+    LinkFlagsLd,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -87,7 +88,8 @@ impl OutputType {
     fn is_compatible_with_codegen_units_and_single_output_file(&self) -> bool {
         match *self {
             OutputType::Exe |
-            OutputType::DepInfo => true,
+            OutputType::DepInfo |
+            OutputType::LinkFlagsLd => true,
             OutputType::Bitcode |
             OutputType::Assembly |
             OutputType::LlvmAssembly |
@@ -103,6 +105,7 @@ impl OutputType {
             OutputType::Object => "obj",
             OutputType::Exe => "link",
             OutputType::DepInfo => "dep-info",
+            OutputType::LinkFlagsLd => "link-flags-ld",
         }
     }
 }
@@ -209,6 +212,7 @@ impl OutputFilenames {
             OutputType::LlvmAssembly => base.with_extension("ll"),
             OutputType::Object => base.with_extension("o"),
             OutputType::DepInfo => base.with_extension("d"),
+            OutputType::LinkFlagsLd => base.with_extension("ldflags"),
             OutputType::Exe => base,
         }
     }

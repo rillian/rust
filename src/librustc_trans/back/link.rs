@@ -832,6 +832,21 @@ fn report_link_line(sess: &Session, native_libs: Vec<(NativeLibraryKind, String)
         return;
     }
 
+    // Write out link flags to a file if requested.
+    if sess.opts.output_types.contains_key(&OutputType::LinkFlagsLd) {
+        let deps_filename = outputs.path(OutputType::LinkFlagsLd);
+        for &(kind, ref lib) in &native_libs {
+            let prefix = match kind {
+                NativeLibraryKind::NativeStatic => "-l",
+                NativeLibraryKind::NativeUnknown => "-l",
+                NativeLibraryKind::NativeFramework => "-f ",
+            };
+            sess.note_without_error(&format!("{}{}", prefix, *lib));
+        }
+        return;
+    }
+
+    // Otherwise, warn about needed link lines in the build output.
     sess.note_without_error(
         "link against the following native artifacts when linking against \
                              this static library");
