@@ -847,7 +847,7 @@ pub fn rustc_short_optgroups() -> Vec<RustcOptGroup> {
                "NAME"),
         opt::multi("", "emit", "Comma separated list of types of output for \
                               the compiler to emit",
-                 "[asm|llvm-bc|llvm-ir|obj|link|dep-info]"),
+                 "[asm|llvm-bc|llvm-ir|obj|link|link-flags-ld|dep-info]"),
         opt::multi("", "print", "Comma separated list of compiler information to \
                                print on stdout",
                  "[crate-name|file-names|sysroot|target-list]"),
@@ -1011,6 +1011,7 @@ pub fn build_session_options(matches: &getopts::Matches) -> Options {
                     "llvm-bc" => OutputType::Bitcode,
                     "obj" => OutputType::Object,
                     "link" => OutputType::Exe,
+                    "link-flags-ld" => OutputType::LinkFlagsLd,
                     "dep-info" => OutputType::DepInfo,
                     part => {
                         early_error(error_format, &format!("unknown emission type: `{}`",
