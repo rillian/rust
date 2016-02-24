@@ -833,18 +833,28 @@ fn report_link_line(sess: &Session, native_libs: Vec<(NativeLibraryKind, String)
     }
 
     // Write out link flags to a file if requested.
-    if sess.opts.output_types.contains_key(&OutputType::LinkFlagsLd) {
-        let deps_filename = outputs.path(OutputType::LinkFlagsLd);
-        for &(kind, ref lib) in &native_libs {
-            let prefix = match kind {
-                NativeLibraryKind::NativeStatic => "-l",
-                NativeLibraryKind::NativeUnknown => "-l",
-                NativeLibraryKind::NativeFramework => "-f ",
+    match sess.opts.output_types.get(&OutputType::LinkFlagsLd) {
+        Some(path) => {
+            match *path {
+                Some(ref path) => sess.note_without_error(
+                    &format!("Would write LDFLAGS to {}", path.display())),
+                None => sess.note_without_error(
+                    &format!("Would write LDFLAGS but no filename given!")),
             };
-            sess.note_without_error(&format!("{}{}", prefix, *lib));
-        }
-        return;
-    }
+            for &(kind, ref lib) in &native_libs {
+                let prefix = match kind {
+                    NativeLibraryKind::NativeStatic => "-l",
+                    NativeLibraryKind::NativeUnknown => "-l",
+                    NativeLibraryKind::NativeFramework => "-f ",
+                };
+                sess.note_without_error(&format!("{}{}", prefix, *lib));
+            }
+            return;
+        },
+        None => {
+            // Link flag out not requested, continue.
+        },
+    };
 
     // Otherwise, warn about needed link lines in the build output.
     sess.note_without_error(
