@@ -841,18 +841,20 @@ fn report_link_line(sess: &Session, native_libs: Vec<(NativeLibraryKind, String)
                 None => sess.note_without_error(
                     &format!("Would write LDFLAGS but no filename given!")),
             };
+            let mut ldflags = String::new();
             for &(kind, ref lib) in &native_libs {
                 let prefix = match kind {
                     NativeLibraryKind::NativeStatic => "-l",
                     NativeLibraryKind::NativeUnknown => "-l",
                     NativeLibraryKind::NativeFramework => "-f ",
                 };
-                sess.note_without_error(&format!("{}{}", prefix, *lib));
+                ldflags.push_str(&format!("{}{} ", prefix, *lib));
             }
+            sess.note_without_error(ldflags.trim_right());
             return;
         },
         None => {
-            // Link flag out not requested, continue.
+            // Link flag output not requested, continue.
         },
     };
 
