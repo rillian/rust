@@ -835,12 +835,6 @@ fn report_link_line(sess: &Session, native_libs: Vec<(NativeLibraryKind, String)
     // Write out link flags to a file if requested.
     match sess.opts.output_types.get(&OutputType::LinkFlagsLd) {
         Some(path) => {
-            match *path {
-                Some(ref path) => sess.note_without_error(
-                    &format!("Would write LDFLAGS to {}", path.display())),
-                None => sess.note_without_error(
-                    &format!("Would write LDFLAGS but no filename given!")),
-            };
             let mut ldflags = String::new();
             for &(kind, ref lib) in &native_libs {
                 let prefix = match kind {
@@ -850,7 +844,23 @@ fn report_link_line(sess: &Session, native_libs: Vec<(NativeLibraryKind, String)
                 };
                 ldflags.push_str(&format!("{}{} ", prefix, *lib));
             }
-            sess.note_without_error(ldflags.trim_right());
+            match *path {
+                Some(ref path) => {
+                    sess.note_without_error(
+                        &format!("Writing LDFLAGS to {}", path.display()));
+                    match fs::File::create(&path).and_then(|mut f| {
+                        f.write_all(ldflags.as_bytes())
+                    }) {
+                        Ok(..) => {}
+                        Err(e) => {
+                            sess.fatal(&format!("failed to write {}: {}",
+                                                path.display(), e));
+                        }
+                    }
+                },
+                None => sess.note_without_error(
+                    &format!("Would write LDFLAGS but no filename given!")),
+            };
             return;
         },
         None => {
