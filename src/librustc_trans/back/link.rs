@@ -842,24 +842,22 @@ fn report_link_line(sess: &Session, native_libs: Vec<(NativeLibraryKind, String)
                     NativeLibraryKind::NativeUnknown => "-l",
                     NativeLibraryKind::NativeFramework => "-f ",
                 };
-                ldflags.push_str(&format!("{}{} ", prefix, *lib));
+                ldflags.push_str(&format!(" {}{}", prefix, *lib));
             }
+            ldflags.push('\n');
             match *path {
                 Some(ref path) => {
-                    sess.note_without_error(
-                        &format!("Writing LDFLAGS to {}", path.display()));
                     match fs::File::create(&path).and_then(|mut f| {
-                        f.write_all(ldflags.as_bytes())
+                        f.write_all(ldflags.trim_left().as_bytes())
                     }) {
                         Ok(..) => {}
-                        Err(e) => {
-                            sess.fatal(&format!("failed to write {}: {}",
-                                                path.display(), e));
-                        }
+                        Err(e) => sess.fatal(
+                            &format!("failed to write {}: {}",
+                                     path.display(), e))
                     }
                 },
                 None => sess.note_without_error(
-                    &format!("Would write LDFLAGS but no filename given!")),
+                    &format!("ldflags: {}", ldflags.trim()))
             };
             return;
         },
