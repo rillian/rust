@@ -1,4 +1,4 @@
-.TH RUSTC "1" "August 2015" "rustc 1.2.0" "User Commands"
+.TH RUSTC "1" "February 2016" "rustc 1.8.0" "User Commands"
 .SH NAME
 rustc \- The Rust compiler
 .SH SYNOPSIS
@@ -50,10 +50,11 @@ Comma separated list of types of crates for the compiler to emit.
 \fB\-\-crate\-name\fR \fINAME\fR
 Specify the name of the crate being built.
 .TP
-\fB\-\-emit\fR [asm|llvm\-bc|llvm\-ir|obj|link|dep\-info][=\fIPATH\fR]
+\fB\-\-emit\fR [asm|llvm\-bc|llvm\-ir|obj|link|link\-flags\-ld|dep\-info][=\fIPATH\fR]
 Configure the output that \fBrustc\fR will produce. Each emission may also have
 an optional explicit output \fIPATH\fR specified for that particular emission
-kind. This path takes precedence over the \fB-o\fR option.
+kind. This path takes precedence over the \fB-o\fR option. Multiple emissions
+may be specified, separated via commas.
 .TP
 \fB\-\-print\fR [crate\-name|file\-names|sysroot]
 Comma separated list of compiler information to print on stdout.
